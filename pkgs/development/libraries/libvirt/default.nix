@@ -253,6 +253,7 @@ stdenv.mkDerivation rec {
       (cfg "init_script" (if isDarwin then "none" else "systemd"))
 
       (feat "apparmor" isLinux)
+      (feat "apparmor_profiles" isLinux)
       (feat "attr" isLinux)
       (feat "audit" isLinux)
       (feat "bash_completion" true)
