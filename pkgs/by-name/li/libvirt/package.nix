@@ -41,6 +41,7 @@
 
   # Linux
   acl ? null,
+  apparmor-parser ? null,
   attr ? null,
   audit ? null,
   dmidecode ? null,
@@ -196,6 +197,7 @@ stdenv.mkDerivation rec {
       perl
       perlPackages.XMLXPath
     ]
+    ++ lib.optional isLinux apparmor-parser
     ++ lib.optional (!isDarwin) rpcsvc-proto
     # NOTE: needed for rpcgen
     ++ lib.optional isDarwin darwin.developer_cmds;
@@ -302,6 +304,7 @@ stdenv.mkDerivation rec {
       (cfg "qemu_datadir" (lib.optionalString isDarwin "${qemu}/share/qemu"))
 
       (feat "apparmor" isLinux)
+      (feat "apparmor_profiles" isLinux)
       (feat "attr" isLinux)
       (feat "audit" isLinux)
       (feat "bash_completion" true)
