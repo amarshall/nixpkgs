@@ -65,9 +65,10 @@ let
         ''
         else ''
           echo "Validating generated nix.conf"
-          ln -s $out ./nix.conf
+          cp $out ./nix.conf
           set -e
           set +o pipefail
+          ${cfg.preCheckConfig}
           NIX_CONF_DIR=$PWD \
             ${cfg.package}/bin/nix show-config ${optionalString (isNixAtLeast "2.3pre") "--no-net"} \
               ${optionalString (isNixAtLeast "2.4pre") "--option experimental-features nix-command"} \
@@ -394,6 +395,20 @@ in
         default = true;
         description = lib.mdDoc ''
           If enabled, checks the nix.conf parsing for any kind of error. When disabled, checks only for unknown settings.
+        '';
+      };
+
+      preCheckConfig = mkOption {
+        type = types.lines;
+        default = "";
+        example = lib.literalExpression ''
+          touch nix.local.conf
+        '';
+        description = lib.mdDoc ''
+          This script gets run before the config is checked. It can be used to
+          create additional files needed for the config check to work, or modify
+          the config for cases the build environment cannot cover. The config file
+          is made available as `./nix.conf`.
         '';
       };
 
