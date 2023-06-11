@@ -59,6 +59,8 @@ let
       inherit channel chromiumVersionAtLeast enableWideVine ungoogled;
     };
 
+    driver = callPackage ./driver.nix { };
+
     ungoogled-chromium = callPackage ./ungoogled.nix {};
   };
 
@@ -232,7 +234,7 @@ in stdenv.mkDerivation {
   inherit (chromium.browser) packageName;
   meta = chromium.browser.meta;
   passthru = {
-    inherit (chromium) upstream-info browser;
+    inherit (chromium) upstream-info browser driver;
     mkDerivation = chromium.mkChromiumDerivation;
     inherit chromeSrc sandboxExecutableName;
   };
