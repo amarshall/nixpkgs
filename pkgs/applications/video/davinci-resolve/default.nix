@@ -262,7 +262,8 @@ buildFHSEnv {
   ''}";
 
   extraInstallCommands = ''
-    mkdir -p $out/share/applications $out/share/icons/hicolor/128x128/apps
+    mkdir -p $out/etc/udev $out/share/applications $out/share/icons/hicolor/128x128/apps
+    ln -s ${davinci}/share/etc/udev $out/etc/udev
     ln -s ${davinci}/share/applications/*.desktop $out/share/applications/
     ln -s ${davinci}/graphics/DV_Resolve.png $out/share/icons/hicolor/128x128/apps/davinci-resolve${lib.optionalString studioVariant "-studio"}.png
   '';
