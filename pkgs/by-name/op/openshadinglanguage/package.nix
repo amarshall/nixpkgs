@@ -9,7 +9,7 @@
   flex,
   lib,
   libxml2,
-  llvmPackages_19,
+  llvmPackages,
   openexr,
   openimageio,
   partio,
@@ -23,7 +23,7 @@
 
 let
   boost_static = boost.override { enableStatic = true; };
-  inherit (llvmPackages_19) clang libclang llvm;
+  inherit (llvmPackages) clang libclang llvm;
   stdenv' = if cudaSupport then cudaPackages.backendStdenv else stdenv;
   optix = fetchFromGitHub {
     owner = "NVIDIA";
@@ -45,10 +45,13 @@ stdenv'.mkDerivation (finalAttrs: {
 
   cmakeFlags = [
     "-DVERBOSE=ON"
+    "-DCMAKE_CXX_STANDARD=26"
+    "-DCMAKE_VERBOSE_MAKEFILE=ON"
     "-DBoost_ROOT=${boost}"
     "-DUSE_BOOST_WAVE=ON"
     "-DENABLE_RTTI=ON"
     "-DPython3_ROOT=${python3Packages.python}"
+    "-DCUDA_TOOLKIT_ROOT_DIR=${cudaPackages.cudatoolkit}"
     (lib.cmakeBool "OSL_USE_OPTIX" cudaSupport)
 
     # Build system implies llvm-config and llvm-as are in the same directory.
@@ -63,7 +66,7 @@ stdenv'.mkDerivation (finalAttrs: {
   prePatch = ''
     substituteInPlace src/cmake/modules/FindLLVM.cmake \
       --replace-fail "NO_DEFAULT_PATH" ""
-    substituteInPlace src/cmake/cuda_macros.cmake --replace-fail '-D__CUDACC__' ""
+    # substituteInPlace src/cmake/cuda_macros.cmake --replace-fail '-D__CUDACC__' ""
   '';
 
   preConfigure = ''
@@ -79,7 +82,8 @@ stdenv'.mkDerivation (finalAttrs: {
     flex
   ]
   ++ lib.optionals cudaSupport [
-    cudaPackages.cuda_nvcc
+    # cudaPackages.cuda_nvcc
+    # cudaPackages.cudatoolkit
   ];
 
   buildInputs = [
@@ -97,9 +101,10 @@ stdenv'.mkDerivation (finalAttrs: {
     zlib
   ]
   ++ lib.optionals cudaSupport [
-    cudaPackages.cuda_cccl
-    cudaPackages.cuda_cudart
-    cudaPackages.libcurand
+    # cudaPackages.cuda_cccl
+    # cudaPackages.cuda_cudart
+    # cudaPackages.libcurand
+    cudaPackages.cudatoolkit
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     libxml2

@@ -3,6 +3,9 @@
   boost,
   bzip2,
   cmake,
+  config,
+  cudaPackages,
+  cudaSupport ? config.cudaSupport,
   enablePython ? true,
   fetchFromGitHub,
   fmt,
@@ -45,6 +48,9 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     cmake
     unzip
+  ]
+  ++ lib.optionals cudaSupport [
+    cudaPackages.cuda_nvcc
   ];
 
   buildInputs = [
@@ -64,6 +70,7 @@ stdenv.mkDerivation (finalAttrs: {
     ptex
     robin-map
   ]
+  ++ lib.optional cudaSupport cudaPackages.cuda_cudart
   ++ lib.optional enablePython python3Packages.pybind11;
 
   propagatedBuildInputs = [
@@ -73,6 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
   cmakeFlags = [
     (lib.cmakeBool "USE_PYTHON" enablePython)
     "-DUSE_QT=OFF"
+    (lib.cmakeBool "OIIO_USE_CUDA" cudaSupport)
     # GNUInstallDirs
     "-DCMAKE_INSTALL_LIBDIR=lib" # needs relative path for pkg-config
     # Do not install a copy of fmt header files
