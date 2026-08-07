@@ -63,6 +63,7 @@ let
         "dovecot"
         "ebpf"
         "elasticsearch"
+        "exporter"
         "fail2ban"
         "fastly"
         "flow"
